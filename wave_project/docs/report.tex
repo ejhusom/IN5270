@@ -1,0 +1,218 @@
+\documentclass[10pt, a4paper]{amsart}
+%\usepackage[english,norsk]{babel}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}   % Margins
+\usepackage{graphicx}   % Images
+\usepackage{float}      % Image floating
+\usepackage{siunitx}    % SI-units
+\usepackage{amsmath}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\usepackage{algorithm}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{framed}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\bibliographystyle{plain}
+
+\usepackage{color}
+%\usepackage{multicol}
+%\setlength\columnsep{14pt}
+
+\definecolor{codegreen}{RGB}{0, 146, 146}
+\definecolor{codegray}{rgb}{0.4,0.4,0.4}
+\definecolor{codeblue}{RGB}{0, 109, 219}
+\definecolor{backcolour}{rgb}{0.9,0.9,0.9}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codeblue},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    basicstyle=\footnotesize \ttfamily \color{black} \bfseries,
+    xleftmargin=0.4cm,
+    frame=tlbr, framesep=0.1cm, framerule=0pt,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+\title[IN5270 Wave project]{IN5270 \\ \large
+Wave project}
+\author[Husom]{Erik Johannes B. L. G. Husom \\ \\ \today}
+
+
+\begin{document}
+\maketitle
+
+%\begin{center}
+%    Source code found in GitHub repository at \url{https://github.com/ejhusom/FYS-STK4155/}
+%\end{center}
+
+\tableofcontents
+
+
+
+\section{Discretization of equations}
+
+In this project we have the following 2D linear wave equation with damping:
+
+\begin{align}
+    \label{eq:wave}
+\frac{\partial^2 u}{\partial t^2} + b \frac{\partial u}{\partial t} &=
+\frac{\partial}{\partial x}\left( q(x,y) \frac{\partial u}{\partial x} \right)
+    + \frac{\partial}{\partial y} \left( q(x,y) \frac{\partial u}{\partial
+            y}\right) + f(x,y,t)
+\end{align}
+The boundary condition is
+\begin{align}
+\frac{\partial u}{\partial n} &= 0
+\end{align}
+and the inital conditions are
+
+\begin{align}
+u(x,y,0) &= I(x,y) \\
+u_t(x,y,0) &= V(x,y)
+\end{align}
+
+To use this in our computer calculations, we need a discretized version. Since
+we have a variable coefficient $q$, we write the inner derivatives (by using a
+centered derivative) as:
+
+\begin{align}
+    \phi_x = q[x,y] \frac{\partial u}{\partial x}, \hspace{0.3cm}\phi_y =
+    q[x,y] \frac{\partial u}{\partial y}
+\end{align}
+
+Then we get
+
+\begin{align}
+    \big[ \frac{\partial \phi_x}{\partial x}\big]_i^n &\approx \frac{\phi_{x,
+    i+1/2} - \phi_{x,i-1/2}}{\Delta x} \\
+    \big[ \frac{\partial \phi_y}{\partial y}\big]_j^n &\approx \frac{\phi_{y,
+    j+1/2} - \phi_{y,j-1/2}}{\Delta y}
+\end{align}
+
+We then write
+
+\begin{align}
+    \phi_{x,i+1/2} & = q_{i+1/2,j} \big[\frac{\partial u}{\partial
+    x}\big]_{i+1/2}^n \approx q_{i+1/2,j} \frac{u_{i+1,j} - u_{i,j}^n}{\Delta
+    x}\\
+    \phi_{x,i-1/2} & = q_{i-1/2,j} \big[\frac{\partial u}{\partial
+    x}\big]_{i-1/2}^n \approx q_{i-1/2,j} \frac{u_{i,j} - u_{i-1,j}^n}{\Delta
+    x}\\
+    \phi_{y,j+1/2} & = q_{i,j++1/2} \big[\frac{\partial u}{\partial
+    y}\big]_{j+1/2}^n \approx q_{i,j+1/2} \frac{u_{i,j+1} - u_{i,j}^n}{\Delta
+    y}\\
+    \phi_{y,j-1/2} & = q_{i,j-1/2} \big[\frac{\partial u}{\partial
+    y}\big]_{j-1/2}^n \approx q_{i,j-1/2} \frac{u_{i,j} - u_{i,j-1}^n}{\Delta
+    y}
+\end{align}
+
+
+To obtain $q$ at the half steps we use the arithmetic mean $q_{i+1/2} \approx
+\frac{1}{2}(q_i + q_{i+1}$ and $q_{i-1/2} \approx \frac{1}{2}(q_i + q_{i-1}$.
+
+This is then used to discretize equation \ref{eq:wave}:
+
+
+\begin{align*}
+\frac{u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1}}{\Delta t^2} + & b
+\frac{u_{i,j}^{n+1}-u_{i,j}^{n-1}}{2\Delta t} = \frac{1}{\Delta x}
+\left(q_{i+\frac{1}{2},j} \left( \frac{u_{i+1,j}^n - u_{i,j}^n}{\Delta x}\right)
+    - q_{i-\frac{1}{2},j} \left( \frac{u_{i,j}^n - u_{i-1,j}^n}{\Delta x}\right)\right) \\
+    & + \frac{1}{\Delta y} \left( q_{i,j+\frac{1}{2}} \left( \frac{u_{i,j+1}^n 
+    - u_{i,j}^n}{\Delta y} \right) - q_{i,j-\frac{1}{2}} \left( \frac{u_{i,j}^n
+    - u_{i,j-1}^n}{\Delta y}\right)\right) + f_{i,j}^n \\
+\frac{u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1}}{\Delta t^2} &= - b
+\frac{u_{i,j}^{n+1}-u_{i,j}^{n-1}}{2\Delta t} \\ & + \frac{1}{\Delta x^2} \left(
+        \frac{1}{2}\left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \frac{1}{2}  \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{1}{\Delta y^2} \left(
+        \frac{1}{2}\left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \frac{1}{2} \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + f_{i,j}^n \\
+u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1} &=  \frac{-b \Delta t}{2} (u_{i,j}^{n+1}-u_{i,j}^{n-1}) \\
+        &+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+u_{i,j}^{n+1} + \frac{b \Delta t}{2}u_{i,j}^{n+1} &= 2u_{i,j}^n-u_{i,j}^{n-1}
++ \frac{b \Delta t}{2}u_{i,j}^{n-1} \\
+ &+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+\left(1+\frac{b \Delta t}{2}\right)u_{i,j}^{n+1} &= 2u_{i,j}^n - 
+\left(1 - \frac{b \Delta t}{2}\right)u_{i,j}^{n-1} \\
+&+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+u_{i,j}^{n+1} &= \frac{1}{1+\frac{b \Delta t}{2}} \left( \right.
+2u_{i,j}^n - 
+\left(1 - \frac{b \Delta t}{2}\right)u_{i,j}^{n-1} \\
+&+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n
+        \left. \right)
+\end{align*}
+
+The modified scheme for the first step will find by using the initial
+conditions:
+
+\begin{align*}
+u_t(x,y,0) &= V(x,y) \\
+\frac{u_{i,j}^0 - u_{i,j}^{-1}}{\Delta t} &= V_{i,j} \\
+u_{i,j}^{-1} &= u_{i,j}^0 - \Delta t V_{i,j}
+\end{align*}
+
+
+
+The modified scheme at the boundary points is found by using the boundary
+conditions:
+
+
+\begin{align*}
+    \frac{\partial u}{\partial n} &= 0\\
+\frac{u_{N_x + 1,j}^n - u_{N_x-1,j}^n}{2\Delta x} &= 0 \\
+u_{N_x+1,j}^n &= u_{N_x-1,j}^n
+\end{align*}
+
+\end{document}
+
