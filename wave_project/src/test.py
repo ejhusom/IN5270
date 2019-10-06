@@ -133,14 +133,14 @@ def test_undampened():
         y = np.linspace(0, Ly, Ny)
         
         wave = Wave(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
-        v_e = u_e(x,y,T)
-
+        v_e = u_e(x, y, T)
         
         E.append(abs(v_e - u[:,:,-1]).max())
 
-    E = p.array(E)
-    rate = p.zeros(n-1)
-    for i in xrange(1, n):
+    E = np.array(E)
+    rate = np.zeros(n-1)
+
+    for i in range(1, n):
         rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     print(E/h_list**2)

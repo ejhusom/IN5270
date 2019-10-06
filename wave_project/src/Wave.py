@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-# ============================================================================
-# File:     wave.py
-# Author:   Erik Johannes Husom
-# Created:  2019-10-04
-# ----------------------------------------------------------------------------
-# Description:
-# Solving 2D linear wave equation with damping and variable coefficients.
-# ============================================================================
 import numpy as np
 
 class Wave():
