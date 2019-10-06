@@ -9,14 +9,6 @@ def test_constant_solution():
     Lx, Ly, T = 1, 1, 1
     dx, dy, dt = 0.1, 0.1, 0.1
 
-    Nx = int(round(Lx/float(dx)))
-    Ny = int(round(Ly/float(dy)))
-    Nt = int(round(T/float(dt)))
-
-    x = np.linspace(0, Lx, Nx)
-    y = np.linspace(0, Ly, Ny)
-    t = np.linspace(0, T, Nt)
-
     V = lambda x, y: 0
     I = lambda x, y: 8
     q = lambda x, y: 4
@@ -38,14 +30,6 @@ def test_constant_solution_vec():
     dx, dy = 0.1, 0.1
     dt = 0.01
     T = 1.
-
-    Nx = int(round(Lx/float(dx)))
-    Ny = int(round(Ly/float(dy)))
-    Nt = int(round(T/float(dt)))
-
-    x = np.linspace(0, Lx, Nx)
-    y = np.linspace(0, Ly, Ny)
-    t = np.linspace(0, T, Nt)
 
     V = lambda x, y: 0
     I = lambda x, y: 8
@@ -70,22 +54,12 @@ def test_plug():
     dt = 0.1
     T = 4.
 
-    Nx = int(round(Lx/float(dx)))
-    Ny = int(round(Ly/float(dy)))
-    Nt = int(round(T/float(dt)))
-
-    x = np.linspace(0, Lx, Nx)
-    y = np.linspace(0, Ly, Ny)
-    t = np.linspace(0, T, Nt)
-    
-
     V = lambda x, y: 0
-
-    I = lambda x: 0 if abs(x-L/2.0) > 0.1 else 1
-
+    q = lambda x, y: 4
+    f = lambda x, y, n: 0
 
     def Ix(x, y):
-        result = np.zeros((len(x),len(y)))
+        result = np.zeros((np.size(x),np.size(y)))
         result[:,:] = 1
         result[np.where(abs(x-Lx/2.0) > 0.1),:] = 0
         return result
@@ -98,7 +72,7 @@ def test_plug():
 
 
     def Iy(x, y):
-        result = np.zeros((len(x),len(y)))
+        result = np.zeros((np.size(x),np.size(y)))
         result[:,:] = 1
         result[:,np.where(abs(y-Ly/2.0) > 0.1)] = 0
         return result
@@ -109,36 +83,24 @@ def test_plug():
         else:
             return 1
         
-
-    def q(x, y):
-        return np.array(5)
-
-    def f(x, y, n):
-        return np.array(0)
-
-
-    u_vx = solver(Ix, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
-    u_sx = solver(Isx, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
-
-    u_vy = solver(Iy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
-    u_sy = solver(Isy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
-    
  
-    wave_x_scalar = Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
-    wave_y_scalar = Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
+    wave_x_scalar = Wave(Isx, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
+    wave_y_scalar = Wave(Isy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
+    wave_x_vec = Wave(Ix, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
+    wave_y_vec = Wave(Iy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
     
-    diff = abs(u_sx - u_vx).max()
+    diff = abs(wave_x_scalar.u - wave_x_vec.u).max()
+    print('Test of plug (x-direction):')
+    print("Max difference: ", diff)
     nt.assert_almost_equal(diff, 0, places=13)
-    diff = abs(u_sy - u_vy).max()
+    diff = abs(wave_y_scalar.u - wave_y_vec.u).max()
+    print('Test of plug (y-direction):')
+    print("Max difference: ", diff)
     nt.assert_almost_equal(diff, 0, places=13)
 
 
 
 def test_undampened():
-    """
-    Making a convergence test for a undampened wave
-    """
-  
     b = 0
     Lx = 10.
     Ly = 10.
@@ -499,7 +461,7 @@ def physical(h, bottom, I0):
 if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
-    test_plug()
+    #test_plug()
     #physical(0.4,3,4)
     #test_mms()
     #test_dampened()

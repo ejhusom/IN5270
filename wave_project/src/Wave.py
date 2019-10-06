@@ -11,9 +11,6 @@ import numpy as np
 
 class Wave():
 
-
-
-
     def __init__(self, I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version='scalar'):
         self.I = I
         self.V = V
@@ -31,8 +28,8 @@ class Wave():
         self.t = np.linspace(0, self.Nt*self.dt, self.Nt+1)
 
         self.u = np.zeros((self.Nx, self.Ny, self.Nt))
-        self.x = np.linspace(0, self.Lx, self.Nx+1)
-        self.y = np.linspace(0, self.Ly, self.Ny+1)
+        self.x = np.linspace(0, self.Lx, self.Nx)
+        self.y = np.linspace(0, self.Ly, self.Ny)
 
         self.dt2 = self.dt**2
         self.dtdx2 = self.dt2/(2*self.dx**2)

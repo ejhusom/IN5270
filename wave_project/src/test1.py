@@ -538,9 +538,9 @@ def physical(h, bottom, I0):
     
 if __name__ == '__main__':
     "something"
-    test_constant_solution_vec()
+    #test_constant_solution_vec()
     #physical(0.4,3,4)
     #test_mms()
-    #test_plug()
+    test_plug()
     #test_constant_solution()
     #test_dampened()
