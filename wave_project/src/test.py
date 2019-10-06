@@ -87,7 +87,6 @@ def test_plug():
     wave_y_scalar = Wave(Isy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
     wave_x_vec = Wave(Ix, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
     wave_y_vec = Wave(Iy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
-    
     diff = abs(wave_x_scalar.u - wave_x_vec.u).max()
     print('Test of plug (x-direction):')
     print("Max difference: ", diff)
@@ -145,6 +144,8 @@ def test_undampened():
 
     #print(E/h_list**2)
     diff = abs(rate_theoretical - rate[-1])
+    print('Test of undampened solution:')
+    print(f'Max difference: {diff}')
     nt.assert_almost_equal(diff, rate_theoretical, places=1)
  
 
