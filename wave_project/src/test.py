@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from Wave import *
 import nose.tools as nt
-
+from sympy import *
 
 def test_constant_solution():
     b = 0
@@ -32,8 +32,14 @@ def test_constant_solution_vec():
 
     V = lambda x, y: 0
     I = lambda x, y: 8
-    q = lambda x, y: 4
-    f = lambda x, y, n: 0
+
+    def q(x, y):
+        return np.array(4)
+
+    def f(x, y, n):
+        return np.array(0)
+
+
     exact_solution = 8
 
     wave_constant= Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt,
@@ -54,8 +60,12 @@ def test_plug():
     T = 4.
 
     V = lambda x, y: 0
-    q = lambda x, y: 4
-    f = lambda x, y, n: 0
+
+    def q(x, y):
+        return np.array(4)
+
+    def f(x, y, n):
+        return np.array(0)
 
     def Ix(x, y):
         result = np.zeros((np.size(x),np.size(y)))
@@ -150,6 +160,25 @@ def test_undampened():
     nt.assert_almost_equal(diff, 0, places=1)
  
 
+def manufactured():
+    f = Symbol('f')
+    x = Symbol('x')
+    y = Symbol('y')
+    t = Symbol('t')
+    A = Symbol('A')
+    omega = Symbol('omega')
+    b = Symbol('b')
+    kx = Symbol('kx')
+    ky = Symbol('ky')
+    u = A*cos(kx*x)*cos(ky*y)*cos(omega*t)
+    u_t = diff(u, t)
+    u_tt = diff(u_t, t)
+    u_x = diff(u, x)
+    u_xx = diff(u_x, x)
+    u_y = diff(u, y)
+    u_yy = diff(u_y, y)
+    f = u_tt - u_xx - u_yy
+    print(f)
 
 def test_mms():
     b = 0
@@ -251,13 +280,16 @@ def physical(h, bottom, I0):
     
     V = lambda x, y: 0
 
+    def f(x, y, n):
+        return np.array(0)
+
     #Initial conditions
     def I(x, y):
         #I0 = 2
         Ia = 2
         Im = 0
         Is = 0.5
-        return I0 + Ia*p.exp(-((x - Im)/Is)**2) 
+        return I0 + Ia*np.exp(-((x - Im)/Is)**2) 
 
 
     def I2(x, y):
@@ -265,7 +297,7 @@ def physical(h, bottom, I0):
         Ia = 1
         Im = 0
         Is = 0.2
-        return I0 + Ia*p.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
+        return I0 + Ia*np.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
 
     #3 different kinds of bottom shapes
     def B1(x,y):
@@ -275,7 +307,7 @@ def physical(h, bottom, I0):
         Bmx = 1
         Bs = 0.4
         b = 1
-        return B0 + Ba*p.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
+        return B0 + Ba*np.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
 
 
     def B2(x,y):
@@ -286,17 +318,17 @@ def physical(h, bottom, I0):
         Bs = 0.4
         b = 1
         
-        index = 0 <  p.sqrt(x**2 + y**2)
-        index2 = p.sqrt(x**2 + y**2) <= Bs
+        index = 0 <  np.sqrt(x**2 + y**2)
+        index2 = np.sqrt(x**2 + y**2) <= Bs
         index = index+index2
         
-        results =  B0 + Ba*p.cos(p.pi*((x - Bmx)/(2*Bs)))*p.cos(p.pi*(y - Bmy)/(2*Bs)) 
+        results =  B0 + Ba*np.cos(np.pi*((x - Bmx)/(2*Bs)))*np.cos(np.pi*(y - Bmy)/(2*Bs)) 
 
         #Temporary solution to make sure that the boundaries for the box are working correctly. 
         #Fix this once it have been tested
-        for i in xrange(len(x)):
-            for j in xrange(len(y)):
-                if (0 > p.sqrt((x[i])**2 + (y[j])**2) >= Bs):
+        for i in range(len(x)):
+            for j in range(len(y)):
+                if (0 > np.sqrt((x[i])**2 + (y[j])**2) >= Bs):
                     results[i,j] = B0
         
         return results
@@ -311,25 +343,17 @@ def physical(h, bottom, I0):
             return I0 - B1(x,y)
         elif (bottom == 2):
             return I0 - B2(x,y)
-        else:
-            return I0 - B3(x,y)
 
             
     def q(x, y):
         return 9.81*H(x,y)
 
 
-
-    def f(x, y, n):
-        return p.array(0)
-
-
-
-    u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
+    wave = Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
     
 
     #Save the arrays
-    np.save("u", u)
+    np.save("u", wave.u)
     if (bottom == 1):
         np.save("h",B1(x,y.reshape(-1,1)))
     elif (bottom == 2):
@@ -349,4 +373,5 @@ if __name__ == '__main__':
     #test_plug()
     #test_undampened()
     #test_mms()
-    physical(0.4,3,4)
+    #physical(0.4,2,4)
+    manufactured()

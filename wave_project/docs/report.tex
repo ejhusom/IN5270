@@ -215,7 +215,7 @@ u_{N_x+1,j}^n &= u_{N_x-1,j}^n
 \end{align*}
 
 
-\section{Verification of constant solution}
+\section{Constant solution}
 
 The file \texttt{test.py} contains test of a constant solution for both the
 scalar and the vectorized version. With a constant solution $u(x,y,t) = c$, the derivatives
@@ -225,6 +225,16 @@ chosen $c=8$. The code also uses \texttt{nose.tools} to assert that the
 difference between the exact and numerical solution is zero.
 
 
+\section{Undampened waves and manufactured solution}
+
+I did not manage to get results that were consistent with the exact solutions.
+I prioritized to finish the physical problem solving instead of finding the
+bugs in this part of the project.
+
+\section{Physical problem}
+
+I have implemented to kinds of surfaces, and produced gifs of how the wave
+motion is.
 
 \end{document}
 

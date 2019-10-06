@@ -89,10 +89,10 @@ class Wave():
 
             #boundary conditions
             #j = 0;
-            self.scheme_vec(n, reshape=False, jstart = 0, jstop = 1, jpstart = 1, jpstop = 2, jmstart = 1, jmstop = 2)
+            self.scheme_vec2(n, jstart = 0, jstop = 1, jpstart = 1, jpstop = 2, jmstart = 1, jmstop = 2)
             
             #j = Ny-1
-            self.scheme_vec(n, reshape=False, jstart = -1, jstop = None, jpstart = -2, jpstop = -1, jmstart = -2, jmstop = -1)
+            self.scheme_vec2(n, jstart = -1, jstop = None, jpstart = -2, jpstop = -1, jmstart = -2, jmstop = -1)
 
             
             #i = 0
@@ -140,7 +140,7 @@ class Wave():
         u[i,j,n+1] /= 1 + 0.5*self.b*self.dt
 
 
-    def scheme_vec(self, n, reshape=False,
+    def scheme_vec(self, n,
             istart=1, istop=-1, ipstart=2, ipstop=None, imstart=0, imstop=-2,\
             jstart=1, jstop=-1, jpstart=2, jpstop=None, jmstart=0, jmstop=-2):
 
@@ -149,7 +149,6 @@ class Wave():
         q = self.q
         x = self.x
         y = self.y
-
 
         u[istart:istop,jstart:jstop,n+1] = \
         2*u[istart:istop,jstart:jstop,n] - (1 - 0.5*self.b*self.dt)*u[istart:istop,jstart:jstop,n-1] + \
@@ -163,12 +162,31 @@ class Wave():
                *(u[istart:istop,jstart:jstop,n] -u[istart:istop,jmstart:jmstop,n])) + \
         self.dt2*self.f(x[istart:istop],y[jstart:jstop], self.dt*n)
         
-        if reshape:
-            u[istart:istop,jstart:jstop,n+1] = u[istart:istop,jstart:jstop,n+1].reshape(-1,1)
-
         u[istart:istop,jstart:jstop,n+1] /=  1 + 0.5*self.b*self.dt
         
         
+    def scheme_vec2(self, n,\
+                   istart = 1, istop = -1, ipstart = 2, ipstop = None, imstart = 0, imstop = -2,\
+                   jstart = 1, jstop = -1, jpstart = 2, jpstop = None, jmstart = 0, jmstop = -2):
+
+             
+        u = self.u
+        q = self.q
+        x = self.x
+        y = self.y
+                   
+        u[istart:istop,jstart:jstop,n+1] = \
+        2*u[istart:istop,jstart:jstop,n] - (1 - 0.5*self.b*self.dt)*u[istart:istop,jstart:jstop,n-1] + \
+        self.dtdx2*((q(x[ipstart:ipstop],y[jstart:jstop]) + q(x[istart:istop],y[jstart:jstop])).reshape(-1,1)\
+               *(u[ipstart:ipstop,jstart:jstop,n] - u[istart:istop,jstart:jstop,n]) \
+               - (q(x[istart:istop],y[jstart:jstop]) + q(x[imstart:imstop],y[jstart:jstop])).reshape(-1,1)\
+               *(u[istart:istop,jstart:jstop,n] - u[imstart:imstop,jstart:jstop,n])) + \
+        self.dtdy2*((q(x[istart:istop],y[jpstart:jpstop]) + q(x[istart:istop],y[jstart:jstop])).reshape(-1,1)\
+               *(u[istart:istop,jpstart:jpstop,n] - u[istart:istop,jstart:jstop,n]) \
+                - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[jmstart:jmstop])).reshape(-1,1)\
+                *(u[istart:istop,jstart:jstop,n] -u[istart:istop,jmstart:jmstop,n])) + \
+                self.dt2*(self.f(x[istart:istop],y[jstart:jstop], self.dt*n)).reshape(-1,1)
+        u[istart:istop,jstart:jstop,n+1] /=  1 + 0.5*self.b*self.dt
 
 if __name__ == '__main__':
     pass
