@@ -9,16 +9,12 @@
 # ============================================================================
 import numpy as np
 
-
-
 class Wave():
 
 
 
 
     def __init__(self, I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version='scalar'):
-
-
         self.I = I
         self.V = V
         self.q = q
@@ -46,6 +42,9 @@ class Wave():
         if version=='vectorized':
             self.u[:,:,0] = self.I(self.x, self.y)
             self.u[:,:,-1] = self.u[:,:,0] - self.dt*self.V(self.x, self.y)
+
+            self.advance_vec()
+
         else:
             for i in range(0, self.Nx):
                 for j in range(0, self.Ny):
@@ -57,9 +56,6 @@ class Wave():
             
             self.advance_scalar()
         
-
-
-
     def advance_scalar(self):
         
 
@@ -104,10 +100,10 @@ class Wave():
 
             #boundary conditions
             #j = 0;
-            self.scheme_vec(n, reshape=True, jstart = 0, jstop = 1, jpstart = 1, jpstop = 2, jmstart = 1, jmstop = 2)
+            self.scheme_vec(n, reshape=False, jstart = 0, jstop = 1, jpstart = 1, jpstop = 2, jmstart = 1, jmstop = 2)
             
             #j = Ny-1
-            self.scheme_vec(n, reshape=True, jstart = -1, jstop = None, jpstart = -2, jpstop = -1, jmstart = -2, jmstop = -1)
+            self.scheme_vec(n, reshape=False, jstart = -1, jstop = None, jpstart = -2, jpstop = -1, jmstart = -2, jmstop = -1)
 
             
             #i = 0
@@ -168,19 +164,19 @@ class Wave():
 
         u[istart:istop,jstart:jstop,n+1] = \
         2*u[istart:istop,jstart:jstop,n] - (1 - 0.5*self.b*self.dt)*u[istart:istop,jstart:jstop,n-1] + \
-        self.dtdx2*((q(x[i2start:i2stop],y[jstart:jstop]) + q(x[istart:istop],y[jstart:jstop]))\
-               *(u[i2start:i2stop,jstart:jstop,n] - u[istart:istop,jstart:jstop,n]) \
-               - (q(x[istart:istop],y[jstart:jstop]) + q(x[i3start:i3stop],y[jstart:jstop]))\
-               *(u[istart:istop,jstart:jstop,n] - u[i3start:i3stop,jstart:jstop,n])) + \
-        self.dtdy2*((q(x[istart:istop],y[j2start:j2stop]) + q(x[istart:istop],y[jstart:jstop]))\
-               *(u[istart:istop,j2start:j2stop,n] - u[istart:istop,jstart:jstop,n]) \
-               - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[j3start:j3stop]))\
-               *(u[istart:istop,jstart:jstop,n] -u[istart:istop,j3start:j3stop,n])) + \
+        self.dtdx2*((q(x[ipstart:ipstop],y[jstart:jstop]) + q(x[istart:istop],y[jstart:jstop]))\
+               *(u[ipstart:ipstop,jstart:jstop,n] - u[istart:istop,jstart:jstop,n]) \
+               - (q(x[istart:istop],y[jstart:jstop]) + q(x[imstart:imstop],y[jstart:jstop]))\
+               *(u[istart:istop,jstart:jstop,n] - u[imstart:imstop,jstart:jstop,n])) + \
+        self.dtdy2*((q(x[istart:istop],y[jpstart:jpstop]) + q(x[istart:istop],y[jstart:jstop]))\
+               *(u[istart:istop,jpstart:jpstop,n] - u[istart:istop,jstart:jstop,n]) \
+               - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[jmstart:jmstop]))\
+               *(u[istart:istop,jstart:jstop,n] -u[istart:istop,jmstart:jmstop,n])) + \
         self.dt2*self.f(x[istart:istop],y[jstart:jstop], self.dt*n)
         
         if reshape:
             u[istart:istop,jstart:jstop,n+1] = u[istart:istop,jstart:jstop,n+1].reshape(-1,1)
-        
+
         u[istart:istop,jstart:jstop,n+1] /=  1 + 0.5*self.b*self.dt
         
         

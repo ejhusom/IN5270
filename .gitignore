@@ -43,6 +43,8 @@ temp*
 *.snm
 *.vrb
 
+# python
+__pycache__*
 
 # eclipse files:
 *.cproject

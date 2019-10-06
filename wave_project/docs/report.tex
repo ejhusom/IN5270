@@ -214,5 +214,17 @@ conditions:
 u_{N_x+1,j}^n &= u_{N_x-1,j}^n
 \end{align*}
 
+
+\section{Verification of constant solution}
+
+The file \texttt{test.py} contains test of a constant solution for both the
+scalar and the vectorized version. With a constant solution $u(x,y,t) = c$, the derivatives
+become zero, so if we set $f = 0$, our exact solution becomes the same as the
+initial condition $I$, which has to be set to $I=c$. In my test case, I have
+chosen $c=8$. The code also uses \texttt{nose.tools} to assert that the
+difference between the exact and numerical solution is zero.
+
+
+
 \end{document}
 

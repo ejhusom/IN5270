@@ -192,6 +192,9 @@ def scheme_vec(u, n, q, f, x ,y, dtdx2, dtdy2, dt2, b, dt, \
     dt2*f(x[istart:istop],y[jstart:jstop], dt*n)
     u[istart:istop,jstart:jstop,n+1] /=  1 + 0.5*b*dt
     
+    print('Vec')
+    print(u[istart:istop,jstart:jstop,n+1])
+    
 
 def scheme_vec2(u, n, q, f, x ,y, dtdx2, dtdy2, dt2, b, dt, \
                istart = 1, istop = -1, i2start = 2, i2stop = None, i3start = 0, i3stop = -2,\
@@ -215,6 +218,8 @@ def scheme_vec2(u, n, q, f, x ,y, dtdx2, dtdy2, dt2, b, dt, \
             dt2*(f(x[istart:istop],y[jstart:jstop], dt*n)).reshape(-1,1)
     u[istart:istop,jstart:jstop,n+1] /=  1 + 0.5*b*dt
 
+    print('Vec2')
+    print(u[istart:istop,jstart:jstop,n+1])
     
     
 if __name__ == '__main__':

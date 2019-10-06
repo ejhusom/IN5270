@@ -26,20 +26,16 @@ def test_constant_solution():
     wave_constant= Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
 
     diff = abs(exact_solution - wave_constant.u).max()
+    print('Test of constant solution (scalar version):')
     print("Max difference: ", diff)
-    nt.assert_almost_equal(difference, 0, places=15)
+    nt.assert_almost_equal(diff, 0, places=15)
 
 
 def test_constant_solution_vec():
-    """
-    Test if a constant solution gives correct answer, non vectorized
-    """
     b = 0
-    Lx = 10.
-    Ly = 10.
+    Lx, Ly = 10, 10
 
-    dx = 0.1
-    dy = 0.1
+    dx, dy = 0.1, 0.1
     dt = 0.01
     T = 1.
 
@@ -50,43 +46,27 @@ def test_constant_solution_vec():
     x = np.linspace(0, Lx, Nx)
     y = np.linspace(0, Ly, Ny)
     t = np.linspace(0, T, Nt)
-    
-    def V(x, y):
-        return 0
 
-    def I(x, y):
-        return 10
+    V = lambda x, y: 0
+    I = lambda x, y: 8
+    q = lambda x, y: 4
+    f = lambda x, y, n: 0
+    exact_solution = 8
 
-    def q(x, y):
-        return p.array(5)
+    wave_constant= Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt,
+            version="vectorized")
 
-    def f(x, y, n):
-        return p.array(0)
-
-
-
-    u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
-
-    
-    def exact_solution(x, y, t):
-         return 10
-    
-    u_e = exact_solution(x, y, t)
-    difference = abs(u_e - u).max()
-    print("Largest difference: ", difference)
-    nt.assert_almost_equal(difference, 0, places=15)
+    diff = abs(exact_solution - wave_constant.u).max()
+    print('Test of constant solution (vectorized version):')
+    print("Max difference: ", diff)
+    nt.assert_almost_equal(diff, 0, places=15)
 
 
 
 def test_plug():
-    """Check that an initial plug wave is correct"""
-  
     b = 0
-    Lx = 1.
-    Ly = 1.
-
-    dx = 0.05
-    dy = 0.05
+    Lx, Ly = 1, 1
+    dx, dy = 0.05, 0.05
     dt = 0.1
     T = 4.
 
@@ -94,17 +74,20 @@ def test_plug():
     Ny = int(round(Ly/float(dy)))
     Nt = int(round(T/float(dt)))
 
-    x = p.linspace(0, Lx, Nx)
-    y = p.linspace(0, Ly, Ny)
-    t = p.linspace(0, T, Nt)
+    x = np.linspace(0, Lx, Nx)
+    y = np.linspace(0, Ly, Ny)
+    t = np.linspace(0, T, Nt)
     
-    def V(x, y):
-        return 0
+
+    V = lambda x, y: 0
+
+    I = lambda x: 0 if abs(x-L/2.0) > 0.1 else 1
+
 
     def Ix(x, y):
-        result = p.zeros((len(x),len(y)))
+        result = np.zeros((len(x),len(y)))
         result[:,:] = 1
-        result[p.where(abs(x-Lx/2.0) > 0.1),:] = 0
+        result[np.where(abs(x-Lx/2.0) > 0.1),:] = 0
         return result
 
     def Isx(x,y):
@@ -115,9 +98,9 @@ def test_plug():
 
 
     def Iy(x, y):
-        result = p.zeros((len(x),len(y)))
+        result = np.zeros((len(x),len(y)))
         result[:,:] = 1
-        result[:,p.where(abs(y-Ly/2.0) > 0.1)] = 0
+        result[:,np.where(abs(y-Ly/2.0) > 0.1)] = 0
         return result
 
     def Isy(x,y):
@@ -128,10 +111,10 @@ def test_plug():
         
 
     def q(x, y):
-        return p.array(5)
+        return np.array(5)
 
     def f(x, y, n):
-        return p.array(0)
+        return np.array(0)
 
 
     u_vx = solver(Ix, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
@@ -141,14 +124,13 @@ def test_plug():
     u_sy = solver(Isy, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
     
  
+    wave_x_scalar = Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
+    wave_y_scalar = Wave(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
     
     diff = abs(u_sx - u_vx).max()
     nt.assert_almost_equal(diff, 0, places=13)
     diff = abs(u_sy - u_vy).max()
     nt.assert_almost_equal(diff, 0, places=13)
-
-
-
 
 
 
@@ -377,10 +359,6 @@ def test_mms():
     nt.assert_almost_equal(diff, 0 ,places=1)
 
 
-
-
-    
-
 def physical(h, bottom, I0):
     """
     Define the physical problem. Takes the type of bottom and the 
@@ -519,10 +497,9 @@ def physical(h, bottom, I0):
 
     
 if __name__ == '__main__':
-    "something"
+    #test_constant_solution()
     #test_constant_solution_vec()
+    test_plug()
     #physical(0.4,3,4)
     #test_mms()
-    #test_plug()
-    test_constant_solution()
     #test_dampened()
