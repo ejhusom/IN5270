@@ -231,9 +231,18 @@ I did not manage to get results that were consistent with the exact solutions.
 I prioritized to finish the physical problem solving instead of finding the
 bugs in this part of the project.
 
+For the manufactured solution, I used \texttt{sympy} to obtain the following
+expression:
+
+\begin{align}
+    f(x, y, t) &= A*kx**2*\cos(kx*x)*\cos(ky*y)*\cos(\omega*t)\\
+    & + A*ky**2*\cos(kx*x)*\cos(ky*y)*\cos(\omega*t) \\
+    &-A*\omega**2*\cos(kx*x)*\cos(ky*y)*\cos(\omega*t)
+\end{align}
+
 \section{Physical problem}
 
-I have implemented to kinds of surfaces, and produced gifs of how the wave
+I have implemented two kinds of surfaces, and produced gifs of how the wave
 motion is.
 
 \end{document}
