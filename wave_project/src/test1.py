@@ -273,35 +273,35 @@ def test_dampened():
         B = 0
         mx = 1
         my = 1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         c = b/2. 
-        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
-        x,y = p.meshgrid(x,y)
-        return (A*p.cos(omega*t) + B*p.sin(omega*t))*p.cos(kx*x)*p.cos(ky*y)*p.exp(-c*t)
+        omega = np.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+        x,y = np.meshgrid(x,y)
+        return (A*np.cos(omega*t) + B*np.sin(omega*t))*np.cos(kx*x)*np.cos(ky*y)*np.exp(-c*t)
 
         
     expected_rate = 2
     n = 20
     E = []
     c = 0.1
-    h_list = p.linspace(5, 0.05, n)
+    h_list = np.linspace(5, 0.05, n)
     for h in h_list: 
         Nx = int(round(Lx/float(h)))
         Ny = int(round(Ly/float(h)))
 
-        x = p.linspace(0, Lx, Nx)
-        y = p.linspace(0, Ly, Ny)
+        x = np.linspace(0, Lx, Nx)
+        y = np.linspace(0, Ly, Ny)
         
         u = solver(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
         v_e = u_e(x,y,T)
         
         E.append(abs(v_e - u[:,:,-1]).max())
 
-    E = p.array(E)
-    rate = p.zeros(n-1)
+    E = np.array(E)
+    rate = np.zeros(n-1)
     for i in range(1, n):
-        rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
+        rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     print(rate)
     diff = abs(expected_rate - rate[-1])
@@ -324,11 +324,11 @@ def test_mms():
         B = 0
         mx = 1
         my = 1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         c = b/2. 
-        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
-        return (omega*B - c*A)*p.cos(kx*x)*p.cos(ky*y)
+        omega = np.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+        return (omega*B - c*A)*np.cos(kx*x)*np.cos(ky*y)
 
     def I(x, y):
         return u_e(x, y, 0)
@@ -341,15 +341,15 @@ def test_mms():
         B = 0
         mx = 1
         my = 1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         c = b/2. 
-        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+        omega = np.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
 
         #The source term, using q = x, and dq/dx = 1, dq/dy = 0
-        return (c**2-b*c-omega**2 + x*(kx**2+ky**2)*p.cos(kx*x)*p.cos(ky*y) +\
-                kx*p.sin(kx*x)*p.cos(ky*y))*(A*p.cos(omega*t) + B*p.sin(omega*t)) +\
-                (b*omega - 2*c*omega)*(-A*p.sin(omega*t) + B*p.cos(omega*t))
+        return (c**2-b*c-omega**2 + x*(kx**2+ky**2)*np.cos(kx*x)*np.cos(ky*y) +\
+                kx*np.sin(kx*x)*np.cos(ky*y))*(A*np.cos(omega*t) + B*np.sin(omega*t)) +\
+                (b*omega - 2*c*omega)*(-A*np.sin(omega*t) + B*np.cos(omega*t))
 
   
 
@@ -358,37 +358,37 @@ def test_mms():
         B = 0
         mx = 1
         my = 1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         c = b/2. 
-        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
-        x,y = p.meshgrid(x,y)
-        return (A*p.cos(omega*t) + B*p.sin(omega*t))*p.cos(kx*x)*p.cos(ky*y)*p.exp(-c*t)
+        omega = np.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+        x,y = np.meshgrid(x,y)
+        return (A*np.cos(omega*t) + B*np.sin(omega*t))*np.cos(kx*x)*np.cos(ky*y)*np.exp(-c*t)
 
         
     expected_rate = 2
     n = 10
     E = []
     c = 0.1
-    h_list = p.linspace(5, 0.05, n)
+    h_list = np.linspace(5, 0.05, n)
     #h_list = [0.01]
     for h in h_list: 
         Nx = int(round(Lx/float(h)))
         Ny = int(round(Ly/float(h)))
 
-        x = p.linspace(0, Lx, Nx)
-        y = p.linspace(0, Ly, Ny)
+        x = np.linspace(0, Lx, Nx)
+        y = np.linspace(0, Ly, Ny)
         
         u = solver(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
         v_e = u_e(x,y,T)
         
         E.append(abs(v_e - u[:,:,-1]).max())
 
-    E = p.array(E)
+    E = np.array(E)
     print(E)
-    rate = p.zeros(n-1)
+    rate = np.zeros(n-1)
     for i in range(1, n):
-        rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
+        rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     print(rate)
     diff = abs(expected_rate - rate[-1])
@@ -418,9 +418,9 @@ def physical(h, bottom, I0):
     Ny = int(round(Ly/float(dy)))
     Nt = int(round(T/float(dt)))
 
-    x = p.linspace(0, Lx, Nx)
-    y = p.linspace(0, Ly, Ny)
-    t = p.linspace(0, T, Nt)
+    x = np.linspace(0, Lx, Nx)
+    y = np.linspace(0, Ly, Ny)
+    t = np.linspace(0, T, Nt)
     
     def V(x, y):
         return 0
@@ -431,7 +431,7 @@ def physical(h, bottom, I0):
         Ia = 2
         Im = 0
         Is = 0.5
-        return I0 + Ia*p.exp(-((x - Im)/Is)**2) 
+        return I0 + Ia*np.exp(-((x - Im)/Is)**2) 
 
 
     def I2(x, y):
@@ -439,7 +439,7 @@ def physical(h, bottom, I0):
         Ia = 1
         Im = 0
         Is = 0.2
-        return I0 + Ia*p.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
+        return I0 + Ia*np.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
 
     #3 different kinds of bottom shapes
     def B1(x,y):
@@ -449,7 +449,7 @@ def physical(h, bottom, I0):
         Bmx = 1
         Bs = 0.4
         b = 1
-        return B0 + Ba*p.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
+        return B0 + Ba*np.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
 
 
     def B2(x,y):
@@ -460,39 +460,21 @@ def physical(h, bottom, I0):
         Bs = 0.4
         b = 1
         
-        index = 0 <  p.sqrt(x**2 + y**2)
-        index2 = p.sqrt(x**2 + y**2) <= Bs
+        index = 0 <  np.sqrt(x**2 + y**2)
+        index2 = np.sqrt(x**2 + y**2) <= Bs
         index = index+index2
         
-        results =  B0 + Ba*p.cos(p.pi*((x - Bmx)/(2*Bs)))*p.cos(p.pi*(y - Bmy)/(2*Bs)) 
+        results =  B0 + Ba*np.cos(np.pi*((x - Bmx)/(2*Bs)))*np.cos(p.pi*(y - Bmy)/(2*Bs)) 
 
         #Temporary solution to make sure that the boundaries for the box are working correctly. 
         #Fix this once it have been tested
         for i in xrange(len(x)):
             for j in xrange(len(y)):
-                if (0 > p.sqrt((x[i])**2 + (y[j])**2) >= Bs):
+                if (0 > np.sqrt((x[i])**2 + (y[j])**2) >= Bs):
                     results[i,j] = B0
         
         return results
     
-    def B3(x,y):
-        B0 = 0
-        Ba = 2.5
-        Bmy = 1
-        Bmx = 1
-        Bs = 0.4
-        b = 1
-
-        results = p.zeros((len(x),len(y)))
-        index = x > Bmx - Bs 
-        index2 = x < (Bmx + Bs)
-        xindex = p.invert(index - index2)
-        index = y > Bmy -b*Bs 
-        index2 = y < (Bmy + b*Bs)
-        yindex = p.invert(index - index2)
-        results[:,:] =  B0
-        results[xindex*yindex] = B0 + Ba
-        return results
     
 
 
@@ -503,8 +485,6 @@ def physical(h, bottom, I0):
             return I0 - B1(x,y)
         elif (bottom == 2):
             return I0 - B2(x,y)
-        else:
-            return I0 - B3(x,y)
 
             
     def q(x, y):
@@ -520,16 +500,14 @@ def physical(h, bottom, I0):
     
 
     #Save the arrays
-    p.np.save("u", u)
+    np.save("u", u)
     if (bottom == 1):
-        p.np.save("h",B1(x,y.reshape(-1,1)))
+        np.save("h",B1(x,y.reshape(-1,1)))
     elif (bottom == 2):
-        p.np.save("h",B2(x,y.reshape(-1,1)))
-    else:
-        p.np.save("h",B3(x,y.reshape(-1,1)))
+        np.save("h",B2(x,y.reshape(-1,1)))
         
-    p.np.save("x",x)
-    p.np.save("y",y)
+    np.save("x",x)
+    np.save("y",y)
     
     
     
@@ -539,8 +517,8 @@ def physical(h, bottom, I0):
 if __name__ == '__main__':
     "something"
     #test_constant_solution_vec()
-    #physical(0.4,3,4)
+    physical(0.4,1,4)
     #test_mms()
     #test_plug()
     #test_constant_solution()
-    test_undampened()
+    #test_undampened()

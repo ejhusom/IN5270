@@ -153,9 +153,7 @@ def test_undampened():
 
 def test_mms():
     b = 0
-    Lx = 10.
-    Ly = 10.
-    T = 10.
+    Lx, Ly, T = 10, 10, 10
     
     def V(x, y):
         A = 1
@@ -234,14 +232,9 @@ def test_mms():
 
 
 def physical(h, bottom, I0):
-    """
-    Define the physical problem. Takes the type of bottom and the 
-    """
-    
     b = 0.2
-    Lx = 2
-    Ly = 2
-    #h = 0.4
+    Lx, Ly = 2, 2
+    h = 0.4
     c = 0.1
     dx = h
     dy = h
@@ -252,12 +245,11 @@ def physical(h, bottom, I0):
     Ny = int(round(Ly/float(dy)))
     Nt = int(round(T/float(dt)))
 
-    x = p.linspace(0, Lx, Nx)
-    y = p.linspace(0, Ly, Ny)
-    t = p.linspace(0, T, Nt)
+    x = np.linspace(0, Lx, Nx)
+    y = np.linspace(0, Ly, Ny)
+    t = np.linspace(0, T, Nt)
     
-    def V(x, y):
-        return 0
+    V = lambda x, y: 0
 
     #Initial conditions
     def I(x, y):
@@ -309,24 +301,6 @@ def physical(h, bottom, I0):
         
         return results
     
-    def B3(x,y):
-        B0 = 0
-        Ba = 2.5
-        Bmy = 1
-        Bmx = 1
-        Bs = 0.4
-        b = 1
-
-        results = p.zeros((len(x),len(y)))
-        index = x > Bmx - Bs 
-        index2 = x < (Bmx + Bs)
-        xindex = p.invert(index - index2)
-        index = y > Bmy -b*Bs 
-        index2 = y < (Bmy + b*Bs)
-        yindex = p.invert(index - index2)
-        results[:,:] =  B0
-        results[xindex*yindex] = B0 + Ba
-        return results
     
 
 
@@ -345,6 +319,7 @@ def physical(h, bottom, I0):
         return 9.81*H(x,y)
 
 
+
     def f(x, y, n):
         return p.array(0)
 
@@ -354,16 +329,14 @@ def physical(h, bottom, I0):
     
 
     #Save the arrays
-    p.np.save("u", u)
+    np.save("u", u)
     if (bottom == 1):
-        p.np.save("h",B1(x,y.reshape(-1,1)))
+        np.save("h",B1(x,y.reshape(-1,1)))
     elif (bottom == 2):
-        p.np.save("h",B2(x,y.reshape(-1,1)))
-    else:
-        p.np.save("h",B3(x,y.reshape(-1,1)))
+        np.save("h",B2(x,y.reshape(-1,1)))
         
-    p.np.save("x",x)
-    p.np.save("y",y)
+    np.save("x",x)
+    np.save("y",y)
     
     
     
@@ -374,6 +347,6 @@ if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
     #test_plug()
-    test_undampened()
+    #test_undampened()
     #test_mms()
-    #physical(0.4,3,4)
+    physical(0.4,3,4)
