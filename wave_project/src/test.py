@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from Wave import *
-from pulse import pulse
 import nose.tools as nt
 
 
@@ -102,50 +101,30 @@ def test_plug():
 
 def test_undampened():
     b = 0
-    Lx = 10.
-    Ly = 10.
-    T = 10.
- 
-    def V(x, y):
-        return 0
+    Lx, Ly, T = 10, 10, 10
 
-    def I(x, y):
-        return u_e(x, y, 0)
-      
-    def q(x, y):
-        return p.array(10)
+    V = lambda x, y: 0
+    I = lambda x, y: u_e[x, y, 0)
+    q = lambda x, y: 10
+    f = lambda x, y: 0
 
-    def f(x, y, n):
-        return p.array(0)
-
-
-    def u_e(x,y,t):
-        A = 8
-        mx = .1
-        my = .1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+    def u_e(x, y, t):
+        A = 4
+        mx, my = 0.1, 0.1
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         omega = 0.1
-        x,y = p.meshgrid(x,y)
-        return A*p.cos(kx*x)*p.cos(ky*y)*p.cos(omega*t)
+        x, y = np.meshgrid(x,y)
+        return A*np.cos(kx*x)*np.cos(ky*y)*np.cos(omega*t)
             
-    def u_e2(x,y,t):
-        A = 1
-        mx = 0.1
-        my = 0.1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
-        omega = 1
-
-        return A*p.cos(kx*x)*p.cos(ky*y)*p.cos(omega*t)
- 
         
         
-    expected_rate = 2
+    rate_theoretical = 2
     n = 10
     E = []
     c = 0.1
-    h_list = p.linspace(5, 0.5, n)
+    h_list = np.linspace(5, 0.5, n)
+
     for h in h_list: 
 
         Nx = int(round(Lx/float(h)))
@@ -153,7 +132,7 @@ def test_undampened():
         x = np.linspace(0, Lx, Nx)
         y = np.linspace(0, Ly, Ny)
         
-        u = solver(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
+        wave = Wave(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
         v_e = u_e(x,y,T)
 
         
@@ -162,75 +141,10 @@ def test_undampened():
     E = p.array(E)
     rate = p.zeros(n-1)
     for i in xrange(1, n):
-        rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
+        rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     print(E/h_list**2)
-    diff = abs(expected_rate - rate[-1])
-    nt.assert_almost_equal(diff, 0 ,places=1)
- 
-
-
-
-def test_dampened():
-    """
-    Making a convergence test for a dampened wave
-    """
-    
-    b = 1
-    Lx = 10.
-    Ly = 10.
-    T = 10.
- 
-    
-    def V(x, y):
-        return 0
-
-    def I(x, y):
-        return u_e(x, y, 0)
-    
-    def q(x, y):
-        return p.array(10)
-
-    def f(x, y, n):
-        return p.array(0)
-
-    def u_e(x,y,t):
-        A = 1
-        B = 0
-        mx = 1
-        my = 1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
-        c = b/2. 
-        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
-        x,y = p.meshgrid(x,y)
-        return (A*p.cos(omega*t) + B*p.sin(omega*t))*p.cos(kx*x)*p.cos(ky*y)*p.exp(-c*t)
-
-        
-    expected_rate = 2
-    n = 20
-    E = []
-    c = 0.1
-    h_list = p.linspace(5, 0.05, n)
-    for h in h_list: 
-        Nx = int(round(Lx/float(h)))
-        Ny = int(round(Ly/float(h)))
-
-        x = p.linspace(0, Lx, Nx)
-        y = p.linspace(0, Ly, Ny)
-        
-        u = solver(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
-        v_e = u_e(x,y,T)
-        
-        E.append(abs(v_e - u[:,:,-1]).max())
-
-    E = p.array(E)
-    rate = p.zeros(n-1)
-    for i in range(1, n):
-        rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
-
-    print(rate)
-    diff = abs(expected_rate - rate[-1])
+    diff = abs(rate_theoretical - rate[-1])
     nt.assert_almost_equal(diff, 0 ,places=1)
  
 
@@ -462,6 +376,6 @@ if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
     #test_plug()
-    #physical(0.4,3,4)
+    test_undampened()
     #test_mms()
-    #test_dampened()
+    #physical(0.4,3,4)
