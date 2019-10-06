@@ -143,18 +143,15 @@ def test_undampened():
         rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     #print(E/h_list**2)
+    print(rate)
     diff = abs(rate_theoretical - rate[-1])
     print('Test of undampened solution:')
-    print(f'Max difference: {diff}')
-    nt.assert_almost_equal(diff, rate_theoretical, places=1)
+    print(f'Difference: {diff}')
+    nt.assert_almost_equal(diff, 0, places=1)
  
 
 
 def test_mms():
-    """
-    Making a convergence test, using MMS to get a source term
-    """
-  
     b = 0
     Lx = 10.
     Ly = 10.
@@ -377,6 +374,6 @@ if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
     #test_plug()
-    #test_undampened()
+    test_undampened()
     #test_mms()
     #physical(0.4,3,4)
