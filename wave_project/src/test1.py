@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from wave import *
-from pulse import pulse
+#from pulse import pulse
 
 
 def test_constant_solution():
@@ -197,21 +197,21 @@ def test_undampened():
         A = 8
         mx = .1
         my = .1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         omega = 0.1
-        x,y = p.meshgrid(x,y)
-        return A*p.cos(kx*x)*p.cos(ky*y)*p.cos(omega*t)
+        x,y = np.meshgrid(x,y)
+        return A*np.cos(kx*x)*np.cos(ky*y)*np.cos(omega*t)
             
     def u_e2(x,y,t):
         A = 1
         mx = 0.1
         my = 0.1
-        kx = mx*p.pi/Lx
-        ky = my*p.pi/Ly
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
         omega = 1
 
-        return A*p.cos(kx*x)*p.cos(ky*y)*p.cos(omega*t)
+        return A*np.cos(kx*x)*np.cos(ky*y)*np.cos(omega*t)
  
         
         
@@ -219,7 +219,7 @@ def test_undampened():
     n = 10
     E = []
     c = 0.1
-    h_list = p.linspace(5, 0.5, n)
+    h_list = np.linspace(5, 0.5, n)
     for h in h_list: 
 
         Nx = int(round(Lx/float(h)))
@@ -233,10 +233,10 @@ def test_undampened():
         
         E.append(abs(v_e - u[:,:,-1]).max())
 
-    E = p.array(E)
-    rate = p.zeros(n-1)
-    for i in xrange(1, n):
-        rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
+    E = np.array(E)
+    rate = np.zeros(n-1)
+    for i in range(1, n):
+        rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
     print(E/h_list**2)
     diff = abs(expected_rate - rate[-1])
@@ -541,6 +541,6 @@ if __name__ == '__main__':
     #test_constant_solution_vec()
     #physical(0.4,3,4)
     #test_mms()
-    test_plug()
+    #test_plug()
     #test_constant_solution()
-    #test_dampened()
+    test_undampened()

@@ -104,9 +104,9 @@ def test_undampened():
     Lx, Ly, T = 10, 10, 10
 
     V = lambda x, y: 0
-    I = lambda x, y: u_e[x, y, 0)
+    I = lambda x, y: u_e(x, y, 0)
     q = lambda x, y: 10
-    f = lambda x, y: 0
+    f = lambda x, y, n: 0
 
     def u_e(x, y, t):
         A = 4
@@ -135,7 +135,7 @@ def test_undampened():
         wave = Wave(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
         v_e = u_e(x, y, T)
         
-        E.append(abs(v_e - u[:,:,-1]).max())
+        E.append(abs(v_e - wave.u[:,:,-1]).max())
 
     E = np.array(E)
     rate = np.zeros(n-1)
@@ -143,9 +143,9 @@ def test_undampened():
     for i in range(1, n):
         rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
 
-    print(E/h_list**2)
+    #print(E/h_list**2)
     diff = abs(rate_theoretical - rate[-1])
-    nt.assert_almost_equal(diff, 0 ,places=1)
+    nt.assert_almost_equal(diff, rate_theoretical, places=1)
  
 
 
@@ -376,6 +376,6 @@ if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
     #test_plug()
-    test_undampened()
+    #test_undampened()
     #test_mms()
     #physical(0.4,3,4)
