@@ -373,5 +373,5 @@ if __name__ == '__main__':
     #test_plug()
     #test_undampened()
     #test_mms()
-    #physical(0.4,2,4)
-    manufactured()
+    physical(0.4,2,4)
+    #manufactured()
