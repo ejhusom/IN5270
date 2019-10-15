@@ -241,7 +241,62 @@ where
 \end{align}
 
 The variables $m_x$ and $m_y$ are arbitrary numbers, and $A$ is the
-amplitude. In order to
+amplitude. In order to find $\omega$, we must insert the exact solution into
+the original wave equation. I have chosen to use $q=1, f=0, b=0$. We get
+
+\begin{align}
+    \frac{\partial u_e}{\partial t} &= - \omega A \cos(k_x x) \cos(k_y y) \sin
+    (\omega t)\\
+    \frac{\partial^2 u_e}{\partial t^2} &= \omega^2 A cos(k_x x) \cos (k_y y)
+    \cos (\omega t) = \omega^2 u_e\\
+    \frac{\partial u_e}{\partial x} &= -k_x A \sin(k_x x) \cos(k_y y) \cos
+    (\omega t)\\
+    \frac{\partial^2 u_e}{\partial x**2} &= k_x^2 A cos (k_x x) \cos(k_y y)
+    \cos (\omega t) = k_x^2 u_e.
+\end{align}
+We get the similar result with $y$:
+\begin{align}
+    \frac{\partial^2 u_e}{\partial y^2} &= k_x^2 A cos (k_x x) \cos(k_y y)
+    \cos (\omega t) = k_y^2 u_e.
+\end{align}
+
+This gives us:
+\begin{align}
+    \omega^2 u_e &= k_x^2 u_e + k_y^2 u_e\\
+    \omega &= \sqrt{k_x^2 + k_y^2}.
+\end{align}
+
+I have implemented the undampened standing waves in the function
+\texttt{test\_undampened}. I have chosen a series of $h$-values, in the list
+\texttt{h\_list}, and calculates the error $\epsilon$ from the exact solution, compared to
+the numerical solution. The convergence rate $r_i$ for each iteration $i$ is then computed with the formula
+\begin{equation}
+    r_i = \frac{\log \epsilon_i / \epsilon_{i-1}}{h_i/h_i - 1}.
+\end{equation}
+
+The error $\epsilon$ is computed by
+
+\begin{equation}
+    \epsilon = \sqrt{\Delta x \Delta y \Delta t \sum (u_e - u_{\text{num}})}
+\end{equation}
+
+where $u_e$ is the exact solution, and $u_{\text{num}}$ is the numerical
+solution.
+
+We expect the numerical convergence rate to be 2 (because the discretization
+are accurate to the second order), and my program shows that the numerical
+solution after some iterations converge to 2:
+
+\texttt{Convergence rate:}
+
+\texttt{[1.99812038 2.00023556 2.00001278 1.99992403]}
+
+\texttt{Test of undampened solution:}
+
+\texttt{Difference: 7.597295288186423e-05}
+
+As we can see from the printout, the difference between the theoretical
+convergence rate 2, and the computed one, is of the order $10^{-5}$.
 
 \section{Manufactured solution}
 
@@ -301,6 +356,44 @@ GitHub repository as this report (I was not able to produce gifs with $h <
     \item \texttt{wave2h04.gif}, shape \texttt{B2}, $h=0.4$.
 \end{itemize}
 
+\begin{figure}
+       \includegraphics[scale=0.4]{../src/wave1h01_1.png}
+       \includegraphics[scale=0.4]{../src/wave1h01_2.png}
+       \caption{Bottom shape \texttt{B1}, $h=0.1$, for the first (left) 
+       and last (right) timestep.}
+       \label{fig:wave1h01}
+\end{figure}
+
+\begin{figure}
+       \includegraphics[scale=0.4]{../src/wave1h04_1.png}
+       \includegraphics[scale=0.4]{../src/wave1h04_2.png}
+       \caption{Bottom shape \texttt{B1}, $h=0.4$, for the first (left) 
+       and last (right) timestep.}
+       \label{fig:wave1h04}
+\end{figure}
+
+\begin{figure}
+       \includegraphics[scale=0.4]{../src/wave2h01_1.png}
+       \includegraphics[scale=0.4]{../src/wave2h01_2.png}
+       \caption{Bottom shape \texttt{B2}, $h=0.1$, for the first (left) 
+       and last (right) timestep.}
+       \label{fig:wave2h01}
+\end{figure}
+
+\begin{figure}
+       \includegraphics[scale=0.4]{../src/wave2h04_1.png}
+       \includegraphics[scale=0.4]{../src/wave2h04_2.png}
+       \caption{Bottom shape \texttt{B2}, $h=0.4$, for the first (left) 
+       and last (right) timestep.}
+       \label{fig:wave2h04}
+\end{figure}
+\begin{figure}
+       \includegraphics[scale=0.4]{../src/wave1h001_1.png}
+       \includegraphics[scale=0.4]{../src/wave2h001_1.png}
+       \caption{Bottom shape \texttt{B1} (left), and bottom shape \texttt{B2}
+       (right), $h=0.01$.}
+       \label{fig:wave1h001}
+\end{figure}
 
 Figure \ref{fig:wave1h01} shows the \texttt{B1} shape with $h=0.1$, while
 figure \ref{fig:wave1h04} shows the same shape with $h=0.4$. In figure
@@ -311,44 +404,6 @@ we can observe that the wave motion appears much smoother when we use a higher
 resolution for the simulations. In figure \ref{fig:wave1h001} we can see the to
 bottom shapes for an even higher resolution, with $h=0.01$.
 
-\begin{figure}
-       \includegraphics[width=\linewidth]{../src/wave1h01_1.png}
-       \includegraphics[width=\linewidth]{../src/wave1h01_2.png}
-       \caption{Bottom shape \texttt{B1}, $h=0.1$, for the first (left) 
-       and last (right) timestep.}
-       \label{fig:wave1h01}
-\end{figure}
-
-\begin{figure}
-       \includegraphics[width=\linewidth]{../src/wave1h04_1.png}
-       \includegraphics[width=\linewidth]{../src/wave1h04_2.png}
-       \caption{Bottom shape \texttt{B1}, $h=0.4$, for the first (left) 
-       and last (right) timestep.}
-       \label{fig:wave1h04}
-\end{figure}
-
-\begin{figure}
-       \includegraphics[width=\linewidth]{../src/wave2h01_1.png}
-       \includegraphics[width=\linewidth]{../src/wave2h01_2.png}
-       \caption{Bottom shape \texttt{B2}, $h=0.1$, for the first (left) 
-       and last (right) timestep.}
-       \label{fig:wave2h01}
-\end{figure}
-
-\begin{figure}
-       \includegraphics[width=\linewidth]{../src/wave2h04_1.png}
-       \includegraphics[width=\linewidth]{../src/wave2h04_2.png}
-       \caption{Bottom shape \texttt{B2}, $h=0.4$, for the first (left) 
-       and last (right) timestep.}
-       \label{fig:wave2h04}
-\end{figure}
-\begin{figure}
-       \includegraphics[width=\linewidth]{../src/wave1h001_1.png}
-       \includegraphics[width=\linewidth]{../src/wave2h001_1.png}
-       \caption{Bottom shape \texttt{B1} (left), and bottom shape \texttt{B2}
-       (right), $h=0.01$.}
-       \label{fig:wave1h001}
-\end{figure}
 
 
 \end{document}

@@ -110,49 +110,66 @@ def test_plug():
 
 def test_undampened():
     b = 0
-    Lx, Ly, T = 10, 10, 10
+    Lx, Ly, T = 1, 1, 10
 
     V = lambda x, y: 0
     I = lambda x, y: u_e(x, y, 0)
-    q = lambda x, y: 10
-    f = lambda x, y, n: 0
+
+    def f(x, y, n):
+        return np.array(0)
+
+    def q(x, y):
+        return np.array(1)
+
 
     def u_e(x, y, t):
         A = 4
         mx, my = 0.1, 0.1
         kx = mx*np.pi/Lx
         ky = my*np.pi/Ly
-        omega = 0.1
+        omega = np.sqrt(kx**2 + ky**2)
         x, y = np.meshgrid(x,y)
         return A*np.cos(kx*x)*np.cos(ky*y)*np.cos(omega*t)
             
         
-        
+    def I(x, y):
+        A = 4
+        mx, my = 0.1, 0.1
+        kx = mx*np.pi/Lx
+        ky = my*np.pi/Ly
+        omega = np.sqrt(kx**2 + ky**2)
+        x, y = np.meshgrid(x,y)
+        return A*np.cos(kx*x)*np.cos(ky*y)
+
+
     rate_theoretical = 2
-    n = 10
+    n = 5
     E = []
-    c = 0.1
-    h_list = np.linspace(5, 0.5, n)
+    h_list = [0.1/(2**(i)) for i in range(n)]
+    #h_list = np.linspace(5, 0.05, n)
+    print(h_list)
+    
 
     for h in h_list: 
-
         Nx = int(round(Lx/float(h)))
         Ny = int(round(Ly/float(h)))
         x = np.linspace(0, Lx, Nx)
         y = np.linspace(0, Ly, Ny)
         
-        wave = Wave(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="scalar")
+        wave = Wave(I, V, q, f, b, Lx, h, Ly, h, T, 0.5*h, version="vectorized")
         v_e = u_e(x, y, T)
         
-        E.append(abs(v_e - wave.u[:,:,-1]).max())
+        #E.append(abs(v_e - wave.u[:,:,-1]).max())
+        E.append(np.sqrt(h**2*h**2*0.5*h**2*np.sum((v_e - wave.u[:,:,-1])**2)))
 
     E = np.array(E)
     rate = np.zeros(n-1)
 
     for i in range(1, n):
-        rate[i-1] = np.log(E[i-1]/E[i])/np.log(h_list[i-1]/h_list[i])
+        rate[i-1] = np.log(E[i]/E[i-1])/np.log(h_list[i]/h_list[i-1])
 
     #print(E/h_list**2)
+    print('Convergence rate:')
     print(rate)
     diff = abs(rate_theoretical - rate[-1])
     print('Test of undampened solution:')
@@ -371,7 +388,7 @@ if __name__ == '__main__':
     #test_constant_solution()
     #test_constant_solution_vec()
     #test_plug()
-    #test_undampened()
+    test_undampened()
     #test_mms()
-    physical(0.01,2,4)
+    #physical(0.01,2,4)
     #manufactured()
