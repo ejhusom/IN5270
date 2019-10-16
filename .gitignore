@@ -12,7 +12,6 @@
 *.png
 *.jpg
 *.jpeg
-*.pdf
 
 # compiled files:
 build*
