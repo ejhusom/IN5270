@@ -1,0 +1,130 @@
+\documentclass[10pt, a4paper]{amsart}
+%\usepackage[english,norsk]{babel}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}   % Margins
+\usepackage{graphicx}   % Images
+\usepackage{float}      % Image floating
+\usepackage{siunitx}    % SI-units
+\usepackage{amsmath}
+\newcommand{\bs}[1]{\boldsymbol{#1}} % abbreviation of boldsymbol
+\usepackage{algorithm}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{framed}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\bibliographystyle{plain}
+
+\usepackage{color}
+%\usepackage{multicol}
+%\setlength\columnsep{14pt}
+
+\definecolor{codegreen}{RGB}{0, 146, 146}
+\definecolor{codegray}{rgb}{0.4,0.4,0.4}
+\definecolor{codeblue}{RGB}{0, 109, 219}
+\definecolor{backcolour}{rgb}{0.9,0.9,0.9}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codeblue},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    basicstyle=\footnotesize \ttfamily \color{black} \bfseries,
+    xleftmargin=0.4cm,
+    frame=tlbr, framesep=0.1cm, framerule=0pt,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+\title[Mandatory exercise 3]{IN5270 \\ \large
+Mandatory eercise 3}
+\author[Husom]{Erik Johannes B. L. G. Husom \\ \\ \today}
+
+
+\begin{document}
+
+
+
+\maketitle
+
+
+\tableofcontents
+
+%\begin{multicols}{2}
+
+\section{Description of the problem}
+
+
+The goal is to compute deflection of a cable with sine functions. We have a hanging cable
+with tension, and the cable has a deflection $\omega(x)$ which is governed by:
+
+\begin{equation}
+    T\omega''(x) = l(x),
+\end{equation}
+where the variables are:
+
+- $L$: Length of cable
+- $T$: Tension on cable
+- $\omega(x)$: Deflection of cable
+- $l(x)$: Vertical load per unit length
+
+Cable is fixed at $x = 0$ and $x = L$, and the boundary conditions are $\omega(0) = w(L) = 0$. Deflection 
+is positive upwards and $l$ is positive when it acts downwards.
+
+Assuming $l(x) = \text{const}$, the solution is symmetric around $x = L/2$. For a
+function $\omega(x)$ that is symmetric around a point $x_0$, we have that
+
+\begin{equation}
+\omega(x_0 - h) = \omega(x_0 + h),
+\end{equation}
+
+which means that
+
+\begin{equation}
+(3) lim_{h->0} (w(x_0+h) - w(x_0 - h))/(2h) = 0.
+\end{equation}
+
+We can therefore halve the domain, since it is symmetric. That limits the
+problem to find $\omega(x)$ in $[0, L/2]$, with boundary conditions $\omega(0) = 0$
+and $\omega'(L/2) = 0$.
+
+Scaling of variables:
+
+\begin{align}
+    x\_ &= x/(L/2)  \hspace{0.5cm}    \text{(setting $x = x\_$ in code for easier notation)}\\
+    u &= \omega/\omega_c \hspace{0.5cm} \text{(where $\omega_c$ is a characteristic size of $\omega$)}
+\end{align}
+
+By putting this into the original equation we get
+
+\begin{equation}
+    (4T \omega_c)/L^2 * u''(x_) = l = \text{const}. 
+\end{equation}
+
+We set $|u''(x_)|= 1$, and we get $\omega_c = 0.25lL^2/T$, and the scaled problem is
+
+    \begin{equation}
+        u'' = 1, x_ \in (0,1), u(0) = 0, u'(1) = 0.
+    \end{equation}
+
+
+%\end{multicols}
+\end{document}
+
