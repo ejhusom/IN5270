@@ -280,12 +280,16 @@ b=
 \end{gather*}
 
 This will now be used to solve the linear system $Ac = b$. We have a boundary
-condition $u(0) = 0$, which means that we must modify the linear system with
+condition $u(0) = 0$, and we can solve this in two ways. 
+
+The first method is to exclude the unknown at $x=0$, which do by just removing
+the top row (and also the first column). The second method is that we modify the linear system with
 $c_0 = 0$, and therefore we set $b_0 = 0$ and the first row of A to 0 (except
 the first element, which is set to 1). This way, we ensure that $u(0)=0$. The
-result is shown in figure \ref{fig:cable_2P1}. My code is in the file
-\texttt{cable\_2P1.py}, which is included in the same GitHub repository as this
-report. To solve the linear system, I have used the \texttt{numpy.linalg.solve}
+result is the same for both methods, and is shown in figure \ref{fig:cable_2P1}. 
+My code is in the file \texttt{cable\_2P1.py}, which is included in the same GitHub repository as this
+report, and clearly show how I have implemented both methods for dealing with
+the boundary conditions. To solve the linear system, I have used the \texttt{numpy.linalg.solve}
 function.
 
 \begin{figure}

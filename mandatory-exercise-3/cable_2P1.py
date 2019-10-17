@@ -44,21 +44,33 @@ def phi2(x):
 def u_e(x):
     return 0.5 * x**2 - x
 
-
-
-if __name__ == '__main__':
-
-    A = np.array([[1, 0, 0], [-2, 4, -2], [0, -2, 2]])
-    b = np.array([-0.25, -0.5, -0.25])
-    b = np.array([0, -0.5, -0.25])
-    c = np.linalg.solve(A, b)
-    x = np.linspace(0, 1, 100)
+def plot(u, x):
 
     plt.figure()
-    u = c[0]*phi0(x) + c[1]*phi1(x) + c[2]*phi2(x)
     plt.plot(x, u, label='u')
     plt.plot(x, u_e(x), label='u_e')
     plt.legend()
     plt.savefig('cable_2P1.png')
     plt.show()
+
+if __name__ == '__main__':
+
+
+    # Method 1: Excluding the unknown at x = 0
+    A = np.array([[4, -2], [-2, 2]])
+    b = np.array([-0.5, -0.25])
+    c = np.linalg.solve(A, b)
+    x = np.linspace(0, 1, 100)
+    u = 0*phi0(x) + c[0]*phi1(x) + c[1]*phi2(x)
+
+    plot(u, x)
+
+    # Method 2: Modifying the linear system:
+    A = np.array([[1, 0, 0], [-2, 4, -2], [0, -2, 2]])
+    b = np.array([0, -0.5, -0.25])
+    c = np.linalg.solve(A, b)
+    x = np.linspace(0, 1, 100)
+    u = c[0]*phi0(x) + c[1]*phi1(x) + c[2]*phi2(x)
+
+    plot(u, x)
 
