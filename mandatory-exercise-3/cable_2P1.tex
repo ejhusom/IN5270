@@ -143,15 +143,22 @@ the boudnary conditions to find the unknown constants:
 \section{Using two P1 elements to approximate the function}
 
 In our case, with two elements, we will have three nodes. The basis function of
-the middle node is easily found by using Lagrange polynomials, which is
+the three nodes are easily found by using Lagrange polynomials, which is
 calculated within each element $\Omega_i$ that the basis function is defined in
 (since we only have two elements in this case, the middle basis function
-$\phi_1$ is defined in both elements. We have a constant distance between each
-node $h = 0.5$, and our nodes is $x_0 = 0, x_1 = 0.5, x_2 = 1$. For our middle
-basis function we get:
+$\varphi_1$ is defined in both elements, while the other two basis functions
+are defined in only one element). We have a constant distance between each
+node $h = 0.5$, and our nodes is $x_0 = 0, x_1 = 0.5, x_2 = 1$. Then we get:
 
 \[
-    \phi_1 =
+    \varphi_0 =
+    \begin{cases}
+        \frac{x - x_{i+1}}{x_i - x_{i+1}} = \frac{x - x_1}{-h} = -2x + 1 & x_0 \leq x
+        < x_1 \\
+    \end{cases}
+\]
+\[
+    \varphi_1 =
     \begin{cases}
         \frac{x - x_{i-1}}{x_i - x_{i-1}} = \frac{x - x_0}{h} = 2x & x_0 \leq x
         < x_1 \\
@@ -159,6 +166,133 @@ basis function we get:
         \leq x < x_2 \\
     \end{cases}
 \]
+\[
+    \varphi_2 =
+    \begin{cases}
+        \frac{x - x_{i-1}}{x_i - x_{i-1}} = \frac{x - x_1}{h} = 2x - 1 & x_1
+        \leq x < x_2 \\
+    \end{cases}
+\]
+
+Our problem expressed in its Galerking formulation is:
+
+\begin{equation}
+    (u'', v) = (f, v),
+\end{equation}
+
+where $f=1$. We use integration by parts to reduce the order of the derivative
+of u:
+
+\begin{align}
+    \int_0^L u''(x)v(x) dx &= -\int_0^L u'(x) v'(x) dx + [vu']_0^L,\\
+    &= -\int_0^L u'(x) v'(x) dx + u'(L)v(L) - u'(0)v(0).
+\end{align}
+
+We have that $u'(L) = 0$, so the middle term vanishes. Since $u(0)=0$, we must
+also require $v(0)=0$. Our variational formulation becomes
+
+\begin{align}
+    - (u', v') &= (1, v),\\
+    (u', v') &= - (1, v).
+\end{align}
+
+
+We can then find the element matrix for $\Omega_0$ ($\varphi^0_1$ means
+$\varphi_1$ as defined in $\Omega_o$), by the formula:
+
+\begin{equation}
+    A_{i,j} = \int_0^{0.5} \varphi'_i \varphi'_j dx,
+\end{equation}
+
+and the $b$-vector by the formula
+
+\begin{equation}
+    b_i = - \int_0^{0.5} \varphi_i dx.
+\end{equation}
+
+We get:
+
+\begin{gather*}
+A^{(0)}=
+\begin{pmatrix}
+\int^{0.5}_{0}\varphi'_0\varphi'_0 dx & \int^{0.5}_{0}\varphi'^0_1\varphi'_0dx\\
+    \int^{0.5}_{0}\varphi'_0\varphi'^0_1dx &
+    \int^{0.5}_{0}\varphi'^0_1\varphi'^0_1 dx
+\end{pmatrix}=
+\begin{pmatrix}
+2 & -2\\
+-2 & 2
+\end{pmatrix}
+\end{gather*}
+
+By using the formula for the element vector $b$, we obtain
+
+\begin{gather*}
+    b^{(0)} = 
+    \begin{pmatrix}
+        [-x^2 + x]_0^{0.5} \\
+        [x^2]_0^{0.5} 
+    \end{pmatrix} =
+    \begin{pmatrix}
+        -0.25\\
+        -0.25
+    \end{pmatrix}
+\end{gather*}
+
+
+We do the similar thing for element $\Omega_1$:
+
+\begin{gather*}
+A^{(1)}=
+\begin{pmatrix}
+2 & -2\\
+-2 & 2
+\end{pmatrix}
+\end{gather*}
+
+\begin{gather*}
+    b^{(1)} = 
+    \begin{pmatrix}
+        [-x^2 + 2x]_{0.5}^{1} \\
+        [x^2 - x]_{0.5}^{1} 
+    \end{pmatrix} =
+    \begin{pmatrix}
+        -0.25\\
+        -0.25
+    \end{pmatrix}
+\end{gather*}
+
+We gather the element matrices and element vectors:
+
+\begin{gather*}
+A=
+\begin{pmatrix}
+2 & -2 &0\\
+-2 & 4 & -2\\
+0& -2 &2
+\end{pmatrix}, \qquad
+b=
+\begin{pmatrix}
+-0.25 \\
+-0.5\\
+-0.25
+\end{pmatrix}
+\end{gather*}
+
+This will now be used to solve the linear system $Ac = b$. We have a boundary
+condition $u(0) = 0$, which means that we must modify the linear system with
+$c_0 = 0$, and therefore we set $b_0 = 0$ and the first row of A to 0 (except
+the first element, which is set to 1). This way, we ensure that $u(0)=0$. The
+result is shown in figure \ref{fig:cable_2P1}. My code is in the file
+\texttt{cable\_2P1.py}, which is included in the same GitHub repository as this
+report. To solve the linear system, I have used the \texttt{numpy.linalg.solve}
+function.
+
+\begin{figure}
+       \includegraphics[width=\linewidth]{cable_2P1.png}
+       \caption{Approximating $u_e$ by using P1 elements.}
+       \label{fig:cable_2P1}
+\end{figure}
 
 %\end{multicols}
 \end{document}

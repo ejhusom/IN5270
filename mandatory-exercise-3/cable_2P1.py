@@ -2,71 +2,63 @@
 # ============================================================================
 # File:     cable_2P1.py
 # Author:   Erik Johannes Husom
-# Created:  2019-10-10
+# Created:  2019-10-17
 # ----------------------------------------------------------------------------
 # Description:
 # Third mandatory exercise in IN5270, University of Oslo, fall 2019.
 # Details of the problem is found in cable_2P1.pdf
 # ============================================================================
-import matplotlib.pyplot as plt
 import numpy as np
-import sympy as sym
+import matplotlib.pyplot as plt
 
+x0 = 0
+x1 = 0.5
+x2 = 1
+
+def phi0(x):
+    return np.piecewise(x, [x < 0, 
+                            np.logical_and(x >= 0, x1 >= x), 
+                            x > x1],
+                        [0,
+                         lambda x: -2*x + 1,
+                         0])
+
+
+def phi1(x):
+    return np.piecewise(x, [x < 0, 
+                            np.logical_and(x >= 0, x1 >= x),
+                            np.logical_and(x > x1, x < x2), 
+                            x > x2],
+                        [0,
+                         lambda x: 2*x,
+                         lambda x: -2*x + 2,
+                         0])
+
+def phi2(x):
+    return np.piecewise(x, [x < x1, 
+                            np.logical_and(x >= x1, x2 >= x), 
+                            x > x2],
+                        [0,
+                         lambda x: 2*x - 1,
+                         0])
 def u_e(x):
     return 0.5 * x**2 - x
 
 
-def phi0(x):
-    pass
-
-def phi1(x):
-    pass
-
-def phi2(x):
-    pass
-
-def phi3(x):
-    pass
-
-
-# x: variable, f: right hand side, constant
-x, f = sym.symbols('x f')
-# B: boundary function
-B = 0
-dBdx = sym.diff(B, x)
-
-
-N = 3
-psi = {0: [x**(i+1)*(1-x) for i in range(N+1)]}
-psi[1] = [sym.diff(psi_i, x) for psi_i in psi[0]]
-
-def integrand_lhs(psi, i, j):
-    return psi[1][i]*psi[1][j]
-
-def integrand_rhs(psi, i):
-    return f*psi[0][i] - dBdx*psi[1][i]
-
-Omega = [0, 1]
-
-def Lagrange_polynomial(x, i, points):
-    p = 1
-    for k in range(len(points)):
-        if k != i:
-            p *= (x - points[k])/(points[i] - points[k])
-    return p
-
-nodes = [0, 0.5, 1]
-elements = [[0, 1], [1, 2]]
-
-
-
-def plot():
-    
-    pass
 
 if __name__ == '__main__':
 
-    x = 0.5
-    i = 1
-    points = [0, 0.5, 1]
-    print(Lagrange_polynomial(x, i, points))
+    A = np.array([[1, 0, 0], [-2, 4, -2], [0, -2, 2]])
+    b = np.array([-0.25, -0.5, -0.25])
+    b = np.array([0, -0.5, -0.25])
+    c = np.linalg.solve(A, b)
+    x = np.linspace(0, 1, 100)
+
+    plt.figure()
+    u = c[0]*phi0(x) + c[1]*phi1(x) + c[2]*phi2(x)
+    plt.plot(x, u, label='u')
+    plt.plot(x, u_e(x), label='u_e')
+    plt.legend()
+    plt.savefig('cable_2P1.png')
+    plt.show()
+
