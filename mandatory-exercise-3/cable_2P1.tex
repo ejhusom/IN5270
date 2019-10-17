@@ -73,26 +73,26 @@ Mandatory eercise 3}
 
 
 The goal is to compute deflection of a cable with sine functions. We have a hanging cable
-with tension, and the cable has a deflection $\omega(x)$ which is governed by:
+with tension, and the cable has a deflection $w(x)$ which is governed by:
 
 \begin{equation}
-    T\omega''(x) = l(x),
+    Tw''(x) = l(x),
 \end{equation}
 where the variables are:
 
 - $L$: Length of cable
 - $T$: Tension on cable
-- $\omega(x)$: Deflection of cable
+- $w(x)$: Deflection of cable
 - $l(x)$: Vertical load per unit length
 
-Cable is fixed at $x = 0$ and $x = L$, and the boundary conditions are $\omega(0) = w(L) = 0$. Deflection 
+Cable is fixed at $x = 0$ and $x = L$, and the boundary conditions are $w(0) = w(L) = 0$. Deflection 
 is positive upwards and $l$ is positive when it acts downwards.
 
 Assuming $l(x) = \text{const}$, the solution is symmetric around $x = L/2$. For a
-function $\omega(x)$ that is symmetric around a point $x_0$, we have that
+function $w(x)$ that is symmetric around a point $x_0$, we have that
 
 \begin{equation}
-\omega(x_0 - h) = \omega(x_0 + h),
+w(x_0 - h) = w(x_0 + h),
 \end{equation}
 
 which means that
@@ -102,28 +102,63 @@ which means that
 \end{equation}
 
 We can therefore halve the domain, since it is symmetric. That limits the
-problem to find $\omega(x)$ in $[0, L/2]$, with boundary conditions $\omega(0) = 0$
-and $\omega'(L/2) = 0$.
+problem to find $w(x)$ in $[0, L/2]$, with boundary conditions $w(0) = 0$
+and $w'(L/2) = 0$.
 
 Scaling of variables:
 
 \begin{align}
-    x\_ &= x/(L/2)  \hspace{0.5cm}    \text{(setting $x = x\_$ in code for easier notation)}\\
-    u &= \omega/\omega_c \hspace{0.5cm} \text{(where $\omega_c$ is a characteristic size of $\omega$)}
+    \overline{x} &= x/(L/2)  \hspace{0.5cm}    \text{(setting $x =
+    \overline{x}$ in code for easier notation)}\\
+    u &= w/w_c \hspace{0.5cm} \text{(where $w_c$ is a characteristic size of $w$)}
 \end{align}
 
 By putting this into the original equation we get
 
 \begin{equation}
-    (4T \omega_c)/L^2 * u''(x_) = l = \text{const}. 
+    \frac{4T w_c}{L^2} u''(\overline{x}) = l = \text{const}. 
 \end{equation}
 
-We set $|u''(x_)|= 1$, and we get $\omega_c = 0.25lL^2/T$, and the scaled problem is
+    We set $|u''(\overline{x})|= 1$, and we get $w_c = 0.25lL^2/T$, and the scaled problem is
 
     \begin{equation}
-        u'' = 1, x_ \in (0,1), u(0) = 0, u'(1) = 0.
+        u'' = 1, \overline{x} \in (0,1), u(0) = 0, u'(1) = 0.
     \end{equation}
 
+
+\section{Exact solution of $u$}
+
+The exact solution of $u$ is easily found by integrating two times, and using
+the boudnary conditions to find the unknown constants:
+
+\begin{align}
+    u'' &= 1,\\
+    u' &= x + C,\\
+    u'(1) &= 0 \Rightarrow C = -1,\\
+    u &= \frac{1}{2}x^2 -x + D,\\
+    u(0) &= 0 \Rightarrow D = 0,\\
+    u &= \frac{1}{2}x^2 - x.
+\end{align}
+
+\section{Using two P1 elements to approximate the function}
+
+In our case, with two elements, we will have three nodes. The basis function of
+the middle node is easily found by using Lagrange polynomials, which is
+calculated within each element $\Omega_i$ that the basis function is defined in
+(since we only have two elements in this case, the middle basis function
+$\phi_1$ is defined in both elements. We have a constant distance between each
+node $h = 0.5$, and our nodes is $x_0 = 0, x_1 = 0.5, x_2 = 1$. For our middle
+basis function we get:
+
+\[
+    \phi_1 =
+    \begin{cases}
+        \frac{x - x_{i-1}}{x_i - x_{i-1}} = \frac{x - x_0}{h} = 2x & x_0 \leq x
+        < x_1 \\
+        \frac{x - x_{i+1}}{x_i - x_{i+1}} = \frac{x - x_2}{-h} = -2x + 2 & x_1
+        \leq x < x_2 \\
+    \end{cases}
+\]
 
 %\end{multicols}
 \end{document}

@@ -9,7 +9,7 @@
 # Run `make latex` to produce PDF from latex-files.
 #=================================================================
 TEX			= pdflatex
-DOC_NAME	= report
+DOC_NAME	= cable_2P1
 BIB		    = references.bib
 PDF			= $(DOC_NAME).pdf
 #FIG_DIR		= ./figs
