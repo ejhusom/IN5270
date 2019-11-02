@@ -19,3 +19,14 @@
 - Finite element basis functions: phi_i(x), where the index corresponds to the
   global node number.
 - We distinguish between internal nodes (in an element) and shared nodes.
+
+
+
+## Time-dependent solving
+
+
+- Start with approximating time-derivative with finite different method
+  (Forward Euler, Backwatd Euler, Crank-Nicolson).
+- Express space derivative as stationary variational form.
+- Find expression for residual.
+- Integration by parts when we have second order derivative on space.
