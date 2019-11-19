@@ -123,13 +123,6 @@ def picard(grid_size=[8,8], rho=1.0, alpha=Constant('1'),
     u0 = I
     u1 = project(u0, V)
     uk = u1
-    
-    #u_D = Expression('0', degree=0)
-
-    #def boundary(x, on_boundary):
-    #    return on_boundary
-
-    #bc = DirichletBC(V, u_D, boundary)
 
     # Bilinear/linear form
     a = (rho*inner(u, v)+ dt*inner(alpha(uk)*nabla_grad(u), nabla_grad(v)))*dx
